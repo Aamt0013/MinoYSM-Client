@@ -8,7 +8,25 @@
     <img src="https://img.shields.io/badge/Java-25-orange" alt="Java"/>
     <img src="https://img.shields.io/badge/license-MIT-green" alt="License"/>
   </p>
+  <p>
+    <a href="https://github.com/Aamt0013/MinoYSM-Client/releases/latest">
+      <img src="https://img.shields.io/github/v/release/Aamt0013/MinoYSM-Client?label=%E4%B8%8B%E8%BD%BD&style=for-the-badge" alt="下载"/>
+    </a>
+  </p>
 </div>
+
+---
+
+## 下载
+
+前往 **[Releases](https://github.com/Aamt0013/MinoYSM-Client/releases/latest)** 下载最新的 `.jar`。
+
+当前版本：**v1.2.2** · 7.79 MB
+
+```
+MinoYSM-Client-26.2-1.2.2.jar
+SHA256: A0178905365F38F5EC65E44F6DFBBCC08184EBB370504B49742CCFF56CB9E7B3
+```
 
 ---
 
@@ -27,9 +45,11 @@
 ## 快速开始
 
 1. 安装 **Fabric Loader 0.19.3+** 与 **Java 25**
-2. 把 `MinoYSM-Client-26.2-1.2.2.jar` 放进 `.minecraft/mods/`
+2. 从 [Releases](https://github.com/Aamt0013/MinoYSM-Client/releases/latest) 下载 jar，放进 `.minecraft/mods/`
 3. 启动游戏，按 **Y** 打开模型界面选模型
 4. 想加自己的模型：把 `.ysm` 文件丢进 `config/yes_steve_model/custom/`，重启游戏
+
+> **装之前先看一眼 `mods/` 里有没有其它 YSM。** mod id 都是 `yes_steve_model`，同时存在两个会直接崩溃。
 
 详细步骤见 [安装说明](docs/INSTALL.md)。
 
