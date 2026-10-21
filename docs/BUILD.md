@@ -83,13 +83,15 @@ loom {
 
 ### 由此带来的一个副作用
 
-没有映射就没有 `refMap`，所以 **Mixin 里不能使用 intermediary 名字**。
+没有映射就没有 `refMap`，所以 **Mixin 里不能使用 intermediary 名字**，必须直接用 26.x 的运行时类名。
 
-Fabric API 自带的 class tweaker 声明的是 `named` 命名空间，与 26.x 的 `official` 对不上。当前做法是在 `.gradle/loom-cache/remapped_mods/` 里对 Fabric API 的 jar 做一次命名空间改写。
+Fabric API 自带的 class tweaker 声明的是 `named` 命名空间，与 26.x 的 `official` 对不上。
 
-> 这意味着**不要随意删除项目内的 `.gradle` 目录**。删了之后 Gradle 会重新生成未经改写的 jar，构建或运行会失败。
->
-> 如果确实需要清理，请先备份 `.gradle/loom-cache/remapped_mods/`。
+**实测结论：`build` 不受影响。** 从干净克隆（无任何 `.gradle` 缓存）执行 `gradlew build` 可以正常产出 jar，这一点已验证过。
+
+如果后续跑 `runClient` 之类的开发运行时遇到命名空间相关的报错，通常需要把 `.gradle/loom-cache/remapped_mods/` 下 Fabric API 的 jar 做一次命名空间改写（`named` → `official`）。
+
+> 因此：**能正常构建就不要去删项目里的 `.gradle`**。真要清理，先备份 `.gradle/loom-cache/remapped_mods/`。
 
 ---
 
