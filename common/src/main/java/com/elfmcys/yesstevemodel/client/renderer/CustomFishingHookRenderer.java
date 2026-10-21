@@ -1,0 +1,105 @@
+package com.elfmcys.yesstevemodel.client.renderer;
+
+import com.elfmcys.yesstevemodel.capability.ProjectileCapability;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import rip.ysm.compat.oculus.OculusCompat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.FishingHook;
+import net.minecraft.world.phys.Vec3;
+import rip.ysm.api.item.ToolActionBridge;
+import org.spongepowered.asm.mixin.Unique;
+
+public class CustomFishingHookRenderer {
+    public static boolean tryRenderCustomHook(FishingHook fishingHook, EntityRenderState state, float partialTick, PoseStack poseStack, SubmitNodeCollector bufferSource, int packedLight) {
+        return ProjectileCapability.get(fishingHook).map(cap -> {
+            if (cap.isModelInitialized() && cap.isModelReady()) {
+                fishingHook.setXRot(0.0f);
+                fishingHook.xRotO = 0.0f;
+                RendererManager.getProjectileRenderer().render(cap.getEntity(), state, partialTick, poseStack, bufferSource, packedLight);
+                Player playerOwner = fishingHook.getPlayerOwner();
+                if (playerOwner != null) {
+                    poseStack.pushPose();
+                    renderFishingLine(fishingHook, partialTick, poseStack, bufferSource, playerOwner);
+                    poseStack.popPose();
+                }
+                return false;
+            }
+            return true;
+        }).orElse(true);
+    }
+
+    private static void renderFishingLine(FishingHook fishingHook, float partialTick, PoseStack poseStack, SubmitNodeCollector bufferSource, Player player) {
+        int hand = player.getMainArm() == HumanoidArm.RIGHT ? 1 : -1;
+        if (!ToolActionBridge.canFishingRodCast(player.getMainHandItem())) {
+            hand = -hand;
+        }
+        float swingProgressSqrt = Mth.sin(Mth.sqrt(player.getAttackAnim(partialTick)) * 3.1415927f);
+        float yawOffset = Mth.lerp(partialTick, player.yBodyRotO, player.yBodyRot) * 0.017453292f;
+        double dSin = Mth.sin(yawOffset);
+        double dCos = Mth.cos(yawOffset);
+        double handOffset = hand * 0.35d;
+        double anglerX;
+        double anglerY;
+        double anglerZ;
+        float anglerEye;
+        EntityRenderDispatcher entityRenderDispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+        Options options = entityRenderDispatcher.options;
+        if (options == null || !options.getCameraType().isFirstPerson() || player != Minecraft.getInstance().player) {
+            anglerX = (Mth.lerp(partialTick, player.xo, player.getX()) - (dCos * handOffset)) - (dSin * 0.8d);
+            anglerY = ((player.yo + player.getEyeHeight()) + ((player.getY() - player.yo) * partialTick)) - 0.45d;
+            anglerZ = (Mth.lerp(partialTick, player.zo, player.getZ()) - (dSin * handOffset)) + (dCos * 0.8d);
+            anglerEye = player.isCrouching() ? -0.1875f : 0.0f;
+        } else {
+            // TODO(26.x): Camera.getNearPlane() 已移除，第一人称渔线起点暂用同一公式近似
+            anglerX = (Mth.lerp(partialTick, player.xo, player.getX()) - (dCos * handOffset)) - (dSin * 0.8d);
+            anglerY = ((player.yo + player.getEyeHeight()) + ((player.getY() - player.yo) * partialTick)) - 0.45d;
+            anglerZ = (Mth.lerp(partialTick, player.zo, player.getZ()) - (dSin * handOffset)) + (dCos * 0.8d);
+            anglerEye = player.isCrouching() ? -0.1875f : 0.0f;
+        }
+        float startX = (float) (anglerX - Mth.lerp(partialTick, fishingHook.xo, fishingHook.getX()));
+        float startY = ((float) (anglerY - (Mth.lerp(partialTick, fishingHook.yo, fishingHook.getY()) + 0.25d))) + anglerEye;
+        float startZ = (float) (anglerZ - Mth.lerp(partialTick, fishingHook.zo, fishingHook.getZ()));
+        float[] color = lineColor(fishingHook);
+        // 26.x：改为提交自定义几何体，VertexConsumer 由回调提供
+        bufferSource.submitCustomGeometry(poseStack, RenderTypes.lines(), (pose, buffer) -> {
+            for (int size = 0; size <= 16; size++) {
+                stringVertex(startX, startY, startZ, buffer, pose, fraction(size), fraction(size + 1), color[0], color[1], color[2]);
+            }
+            if (OculusCompat.isLoaded()) {
+                buffer.addVertex(0.0f, 0.0f, 0.0f).setColor(0, 0, 0, 255).setNormal(0.0f, 0.0f, 0.0f);
+            }
+        });
+    }
+
+    @Unique
+    private static float[] lineColor(FishingHook fishingHook) {
+        return new float[]{0.0f, 0.0f, 0.0f};
+    }
+
+    @Unique
+    private static float fraction(int i) {
+        return i / 16.0f;
+    }
+
+    @Unique
+    private static void stringVertex(float x, float y, float z, VertexConsumer vertexConsumer, PoseStack.Pose pose, float startFrac, float endFrac, float red, float green, float blue) {
+        float vx = x * startFrac;
+        float vy = (y * ((startFrac * startFrac) + startFrac) * 0.5f) + 0.25f;
+        float vz = z * startFrac;
+        float dx = (x * endFrac) - vx;
+        float dy = (((y * ((endFrac * endFrac) + endFrac)) * 0.5f) + 0.25f) - vy;
+        float dz = (z * endFrac) - vz;
+        float length = Mth.sqrt((dx * dx) + (dy * dy) + (dz * dz));
+        vertexConsumer.addVertex(pose, vx, vy, vz).setColor(red, green, blue, 1.0f).setNormal(pose, dx / length, dy / length, dz / length);
+    }
+}

@@ -1,0 +1,14 @@
+pluginManagement {
+    repositories {
+        maven { url "https://maven.fabricmc.net/" }
+        maven { url "https://maven.architectury.dev/" }
+        // architectury-loom 自身的工具链依赖（mcinjector、DiffPatch 等）发布在 Forge maven，构建 Fabric 也需要。
+        maven { url "https://maven.minecraftforge.net/" }
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'yes_steve_model'
+
+include 'common'
+include 'fabric'

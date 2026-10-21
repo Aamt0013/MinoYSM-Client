@@ -1,0 +1,83 @@
+package com.elfmcys.yesstevemodel.client.gui.button;
+
+import com.elfmcys.yesstevemodel.capability.PlayerCapability;
+import com.elfmcys.yesstevemodel.client.entity.PlayerPreviewEntity;
+import com.elfmcys.yesstevemodel.client.model.ModelAssembly;
+import com.elfmcys.yesstevemodel.client.gui.ModelMetadataPresenter;
+import com.elfmcys.yesstevemodel.client.renderer.CustomPlayerRenderer;
+import com.elfmcys.yesstevemodel.client.renderer.ModelPreviewRenderer;
+import com.elfmcys.yesstevemodel.client.renderer.RendererManager;
+import com.elfmcys.yesstevemodel.network.NetworkHandler;
+import com.elfmcys.yesstevemodel.network.message.C2SRequestSwitchModelPacket;
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.FormattedCharSequence;
+
+import java.util.List;
+
+public class TextureButton extends Button {
+
+    public final PlayerPreviewEntity previewEntity;
+
+    public final ModelAssembly modelAssembly;
+
+    public TextureButton(int x, int y, PlayerPreviewEntity previewEntity, ModelAssembly modelAssembly) {
+        super(x, y, 54, 102, Component.empty(), button -> {
+        }, DEFAULT_NARRATION);
+        this.previewEntity = previewEntity;
+        this.modelAssembly = modelAssembly;
+    }
+
+    @Override
+    public void onPress(InputWithModifiers input) {
+        LocalPlayer localPlayer = Minecraft.getInstance().player;
+        if (localPlayer != null) {
+            PlayerCapability.get(localPlayer).ifPresent(cap -> {
+                cap.setCurrentTexture(this.previewEntity.getCurrentTextureName());
+                NetworkHandler.sendToServer(new C2SRequestSwitchModelPacket(this.previewEntity.getModelId(), this.previewEntity.getCurrentTextureName()));
+            });
+        }
+    }
+
+    public void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        Minecraft minecraft = Minecraft.getInstance();
+        Font font = minecraft.font;
+        guiGraphics.fillGradient(getX(), getY(), getX() + this.width, getY() + this.height, -12369342, -12369342);
+        renderPlayerPreview(guiGraphics, minecraft.getDeltaTracker().getGameTimeDeltaPartialTick(false));
+        String str = this.previewEntity.getCurrentTextureName();
+        MutableComponent mutableComponentLiteral = Component.literal(ModelMetadataPresenter.getLocalizedModelString(this.modelAssembly, "files.player.texture.%s".formatted(str), str));
+        List listSplit = font.split(mutableComponentLiteral, 50);
+        if (listSplit.size() > 1) {
+            guiGraphics.centeredText(font, (FormattedCharSequence) listSplit.get(0), getX() + (this.width / 2), (getY() + this.height) - 19, 0xFFF3F0E0);
+            guiGraphics.centeredText(font, (FormattedCharSequence) listSplit.get(1), getX() + (this.width / 2), (getY() + this.height) - 10, 0xFFF3F0E0);
+        } else {
+            guiGraphics.centeredText(font, mutableComponentLiteral, getX() + (this.width / 2), (getY() + this.height) - 15, 0xFFF3F0E0);
+        }
+        if (isHoveredOrFocused()) {
+            guiGraphics.fillGradient(getX(), getY() + 1, getX() + 1, (getY() + this.height) - 1, -790560, -790560);
+            guiGraphics.fillGradient(getX(), getY(), getX() + this.width, getY() + 1, -790560, -790560);
+            guiGraphics.fillGradient((getX() + this.width) - 1, getY() + 1, getX() + this.width, (getY() + this.height) - 1, -790560, -790560);
+            guiGraphics.fillGradient(getX(), (getY() + this.height) - 1, getX() + this.width, getY() + this.height, -790560, -790560);
+        }
+    }
+
+    public void renderPlayerPreview(GuiGraphicsExtractor guiGraphics, float partialTick) {
+        ModelPreviewRenderer.submitLivingEntityPreview(
+                guiGraphics,
+                getX(), getY(), getX() + this.width, (getY() + this.height) - 20,
+                35,
+                partialTick,
+                this.previewEntity,
+                false,
+                true
+        );
+    }
+}
