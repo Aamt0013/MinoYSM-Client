@@ -242,7 +242,7 @@ public final class ServerModelManager {
             } catch (IOException ignored) {}
         }
         try {
-            Path assetsBuiltin = Platform.getMod(YesSteveModel.MOD_ID).findResource("assets", YesSteveModel.MOD_ID, "builtin").orElse(null);
+            Path assetsBuiltin = Platform.getMod(YesSteveModel.MOD_CONTAINER_ID).findResource("assets", YesSteveModel.MOD_ID, "builtin").orElse(null);
 
             if (assetsBuiltin == null || !Files.isDirectory(assetsBuiltin)) return;
 

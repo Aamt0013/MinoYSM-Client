@@ -12,4 +12,8 @@ public final class ConfigRegistrationImpl {
     public static void register(String modId, ModConfig.Type type, ForgeConfigSpec spec) {
         ConfigRegistry.INSTANCE.register(modId, type, spec);
     }
+
+    public static void register(String modId, ModConfig.Type type, ForgeConfigSpec spec, String fileName) {
+        ConfigRegistry.INSTANCE.register(modId, type, spec, fileName);
+    }
 }

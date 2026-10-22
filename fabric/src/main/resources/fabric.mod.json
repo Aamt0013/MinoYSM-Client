@@ -1,12 +1,16 @@
 {
   "schemaVersion": 1,
-  "id": "yes_steve_model",
+  "id": "minoysm",
   "version": "${version}",
   "name": "MinoYSM Client",
-  "description": "Yes Steve Model 的 Minecraft 26.2 纯客户端移植版（MinoYSM Client）。可独立加载 custom/ 目录中的模型，服务器未安装本模组时同样可用。内置模型只保留 default（一个基础人形），其余模型请自行放入 custom/。模组 id 保持 yes_steve_model 以兼容已有模型包与服务器协议；与双端版不能同时安装。",
-  "authors": ["Tianjin Accessible Care Innovation Development Co., Ltd."],
+  "description": "Yes Steve Model 的 Minecraft 26.2 非官方纯客户端移植版（MinoYSM Client）。服务器无需安装本模组，模型从本地 custom/ 目录加载，服务器未装 YSM 时同样可用。内置模型只保留 default（一个基础人形），其余模型请自行放入 custom/。资源命名空间仍为 yes_steve_model 以兼容已有模型包；模组 id 为 minoysm，与官方版分开，但两者都会接管玩家模型渲染，不能同时启用。",
+  "authors": ["Aamt0013"],
+  "contributors": ["Yes Steve Model 原作者与 OpenYSM 贡献者"],
   "contact": {
-    "homepage": "https://github.com/Aamt0013/MinoYSM-Client"  },
+    "homepage": "https://github.com/Aamt0013/MinoYSM-Client",
+    "sources": "https://github.com/Aamt0013/MinoYSM-Client",
+    "issues": "https://github.com/Aamt0013/MinoYSM-Client/issues"
+  },
   "license": "Apache-2.0",
   "icon": "yesstevemodel.png",
   "environment": "client",

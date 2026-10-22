@@ -26,6 +26,23 @@ Copyright Yes Steve Model contributors
 
 26.2 移植与纯客户端改造部分：`Copyright (c) 2026 Aamt0013`
 
+### 关于许可证口径
+
+上游 Yes Steve Model 的**源代码仓库**（GitHub）以 **Apache-2.0** 发布，本项目据此派生。
+该模组在 Modrinth 上的项目页标注为 All Rights Reserved —— 那是分发页的声明；
+两者不一致时，本项目以代码仓库中的 LICENSE 文件为准。
+
+### 模组 id 与资源命名空间
+
+本项目刻意把两者分开：
+
+| 用途 | 值 | 原因 |
+|---|---|---|
+| Fabric 模组 id | `minoysm` | 与官方版 `yes_steve_model` 区分，避免 id 冲突导致启动崩溃 |
+| 资源命名空间 | `yes_steve_model` | 保持不变，兼容既有模型包、贴图路径与 `config/yes_steve_model/` 目录 |
+
+本项目**不是**官方版本，也未获得官方背书。资源命名空间沿用上游标识仅出于兼容性考虑。
+
 ---
 
 ## 内置模型资产

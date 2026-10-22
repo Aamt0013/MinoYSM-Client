@@ -518,7 +518,7 @@ public class ClientModelManager {
     /** 当前模组版本号；取不到时返回 null（此时每次都重新解压，行为安全但略慢）。 */
     private static String currentModVersion() {
         try {
-            return dev.architectury.platform.Platform.getMod(YesSteveModel.MOD_ID).getVersion();
+            return dev.architectury.platform.Platform.getMod(YesSteveModel.MOD_CONTAINER_ID).getVersion();
         } catch (Throwable t) {
             return null;
         }

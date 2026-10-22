@@ -477,7 +477,7 @@ public class PlayerModelScreen extends Screen implements IGuiWidget {
         if(renderer.equals("SIMD") && GpuCapability.isAvailable() && GeneralConfig.USE_GPU_RENDERER.get()) {
             renderer = "GPU";
         }
-        String strVersionString = Platform.getMod(YesSteveModel.MOD_ID).getVersion();
+        String strVersionString = Platform.getMod(YesSteveModel.MOD_CONTAINER_ID).getVersion();
         guiGraphics.pose().pushMatrix();
         guiGraphics.pose().translate(0.0f, 0.0f);
         guiGraphics.text(this.font, strVersionString + " (" + renderer + ")", this.guiLeft + 2, this.guiTop + 226, TextColor.fromLegacyFormat(ChatFormatting.DARK_GRAY).getValue() | 0xFF000000);

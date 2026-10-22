@@ -483,7 +483,7 @@
   "subtitle.yes_steve_model.custom": "YSM Custom Sound",
   "top.yes_steve_model.model_info.id": "YSM Model: ",
   "config.jade.plugin_yes_steve_model.model_info": "Show YSM Model Info",
-  "modmenu.nameTranslation.yes_steve_model": "Yes Steve Model",
-  "modmenu.descriptionTranslation.yes_steve_model": "This mod allows replacing the default player model and freely modifying appearance and animations. It supports Bedrock Edition format model and animation files.",
-  "modmenu.summaryTranslation.yes_steve_model": "Player appearance and animation modification"
+  "modmenu.nameTranslation.minoysm": "MinoYSM Client",
+  "modmenu.descriptionTranslation.minoysm": "Unofficial client-only port of Yes Steve Model to Minecraft 26.2. Replaces the player model and supports Bedrock Edition format model and animation files. No server installation required.",
+  "modmenu.summaryTranslation.minoysm": "Player model replacement (client-only)"
 }

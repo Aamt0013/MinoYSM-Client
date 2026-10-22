@@ -2,6 +2,7 @@
   <img src="assets/banner.jpg" alt="MinoYSM Client"/>
   <h1>MinoYSM Client</h1>
   <p>Yes Steve Model 的 Minecraft 26.2 纯客户端移植版</p>
+  <p><strong>非官方移植，与 Yes Steve Model 官方团队无关</strong></p>
   <p>
     <img src="https://img.shields.io/badge/Minecraft-26.2-62B47A" alt="Minecraft"/>
     <img src="https://img.shields.io/badge/Fabric-0.19.3+-blue" alt="Fabric"/>
@@ -21,11 +22,11 @@
 
 前往 **[Releases](https://github.com/Aamt0013/MinoYSM-Client/releases/latest)** 下载最新的 `.jar`。
 
-当前版本：**v1.2.7** · 7.63 MB
+当前版本：**v1.2.8** · 7.63 MB
 
 ```
-MinoYSM-Client-26.2-1.2.7.jar
-SHA256: 73FB1C79D08082A8A64C2C8FD39521F30574B5462CA61FA491351F66B3A7A759
+MinoYSM-Client-26.2-1.2.8.jar
+SHA256: 2B240A53064D823F49C093DCC8F41B1DBF9D43EA4971C0CA898DAD9D995E2039
 ```
 
 ---
@@ -38,7 +39,9 @@ SHA256: 73FB1C79D08082A8A64C2C8FD39521F30574B5462CA61FA491351F66B3A7A759
 - 模型从本地 `config/yes_steve_model/custom/` 加载，不依赖服务端下发。
 - 装的是客户端模组，服务端无需任何改动。
 
-> 模组内部 id 仍是 `yes_steve_model`，这是刻意保留的 —— 模型包格式、配置文件路径、与 YSM 服务器的通信协议都依赖它。因此**不能与其它 YSM 版本同时安装**。
+> 模组 id 是 `minoysm`，与官方版的 `yes_steve_model` 分开，因此不会再出现「Duplicate mod id」这类崩溃。但**资源命名空间仍保留 `yes_steve_model`** —— 模型包、贴图路径、`config/yes_steve_model/` 目录都依赖它，改了会让已有用户的模型文件夹失效。
+>
+> 注意：虽然 id 分开了，两个模组**仍然不能同时启用**。它们都会接管玩家模型渲染，同时装会重复绘制。检测到这种情况时日志里会有一条明确的错误提示。
 
 ---
 
@@ -49,7 +52,7 @@ SHA256: 73FB1C79D08082A8A64C2C8FD39521F30574B5462CA61FA491351F66B3A7A759
 3. 启动游戏，按 **Y** 打开模型界面选模型
 4. 想加自己的模型：把 `.ysm` 文件丢进 `config/yes_steve_model/custom/`，重启游戏
 
-> **装之前先看一眼 `mods/` 里有没有其它 YSM。** mod id 都是 `yes_steve_model`，同时存在两个会直接崩溃。
+> **装之前先看一眼 `mods/` 里有没有其它 YSM。** 两个模组会同时接管玩家渲染，重复绘制甚至崩溃。模组 id 已经分开，不会在启动时硬崩，但日志里会提示冲突。
 
 详细步骤见 [安装说明](docs/INSTALL.md)。
 

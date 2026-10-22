@@ -23,7 +23,7 @@ public class PingCommand {
 
     private static int executePing(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer playerOrException = context.getSource().getPlayerOrException();
-        playerOrException.sendSystemMessage(Component.translatable("message.yes_steve_model.client.ping_result", Platform.getMod(YesSteveModel.MOD_ID).getVersion()));
+        playerOrException.sendSystemMessage(Component.translatable("message.yes_steve_model.client.ping_result", Platform.getMod(YesSteveModel.MOD_CONTAINER_ID).getVersion()));
         if (!NetworkHandler.isPlayerConnected(playerOrException)) {
             NetworkHandler.sendToClientPlayer(new S2CVersionCheckPacket(), playerOrException);
             return Command.SINGLE_SUCCESS;
