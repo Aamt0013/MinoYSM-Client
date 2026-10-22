@@ -6,7 +6,7 @@
     <img src="https://img.shields.io/badge/Minecraft-26.2-62B47A" alt="Minecraft"/>
     <img src="https://img.shields.io/badge/Fabric-0.19.3+-blue" alt="Fabric"/>
     <img src="https://img.shields.io/badge/Java-25-orange" alt="Java"/>
-    <img src="https://img.shields.io/badge/license-MIT-green" alt="License"/>
+    <img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="License"/>
   </p>
   <p>
     <a href="https://github.com/Aamt0013/MinoYSM-Client/releases/latest">
@@ -21,11 +21,11 @@
 
 前往 **[Releases](https://github.com/Aamt0013/MinoYSM-Client/releases/latest)** 下载最新的 `.jar`。
 
-当前版本：**v1.2.5** · 7.93 MB
+当前版本：**v1.2.5** · 7.96 MB
 
 ```
 MinoYSM-Client-26.2-1.2.5.jar
-SHA256: 180DD99EF4C29770AAE5203A259DE33207FD9C40601369191745C44BBFF6A1A5
+SHA256: CB5E3C26790C799CD6A47CA1898CEB914B8A3148E051DE4648808A2EC2F8EA74
 ```
 
 ---
@@ -136,11 +136,12 @@ config/yes_steve_model/
 
 本项目基于以下开源项目：
 
-- [Yes Steve Model](https://github.com/OpenYSM/OpenYSM) —— 原始模组，MIT
-- [OpenYSM-Updated](https://github.com/IzumiiKonata/OpenYSM-Updated) —— 高版本移植起点
+- [Yes Steve Model](https://github.com/YesSteveModel/YesSteveModel) —— 原始模组，Apache-2.0
+- [OpenYSM](https://github.com/OpenYSM/OpenYSM) —— 开源替代实现，MIT
+- [OpenYSM-Updated](https://github.com/IzumiiKonata/OpenYSM-Updated) —— 高版本移植起点，MIT
 
 26.2 移植与纯客户端改造由本项目完成。
 
-以 **MIT 许可证**发布，详见 [LICENSE](LICENSE)。
+以 **Apache License 2.0** 发布，详见 [LICENSE](LICENSE)。第三方组件、上游归属与内置模型资产的许可说明见 [NOTICE.md](NOTICE.md)。
 
-> 模型版权归各模型作者所有，本项目不附带任何第三方模型。
+> 模型版权归各模型作者所有，本项目不附带任何第三方模型。内置的 `default` 模型为 CC0。

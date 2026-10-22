@@ -7,7 +7,7 @@
   "authors": ["Tianjin Accessible Care Innovation Development Co., Ltd."],
   "contact": {
     "homepage": "https://github.com/Aamt0013/MinoYSM-Client"  },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "icon": "yesstevemodel.png",
   "environment": "client",
   "entrypoints": {
