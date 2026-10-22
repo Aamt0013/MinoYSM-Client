@@ -9,8 +9,6 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import rip.ysm.imagestream.avif.AvifDecoder;
-import rip.ysm.imagestream.webp.WebpDecoder;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -954,16 +952,51 @@ public class YSMFolderDeserializer implements AutoCloseable {
             BufferedImage img = null;
             switch (format) {
                 case 1, 3 -> img = ImageIO.read(new ByteArrayInputStream(data));
-                case 4 -> img = new WebpDecoder().read(data);
-                case 5 -> img = new AvifDecoder().read(data);
+                case 4, 5 -> img = ImageDecoder.decode(data, format);
             }
             if (img != null) {
                 return new ImageMeta(img.getWidth(), img.getHeight(), format);
+            }
+            // AVIF 解不出像素，但 ispe 盒里存着尺寸，仍能填出正确的元数据，
+            // 避免整张贴图（乃至整个模型）因为缺尺寸而加载失败。
+            if (format == ImageDecoder.FORMAT_AVIF) {
+                int[] size = readAvifSize(data);
+                if (size != null) {
+                    return new ImageMeta(size[0], size[1], format);
+                }
             }
             throw new RuntimeException("Failed to decode image dimensions for: " + path);
         } catch (Exception e) {
             throw new RuntimeException("Error processing image: " + path, e);
         }
+    }
+
+    /**
+     * 从 AVIF/HEIF 的 ISOBMFF 盒结构中读取 {@code ispe}（Image Spatial Extents）的宽高。
+     * 不做解码，只扫盒头，成本可以忽略。
+     *
+     * @return {@code {width, height}}，找不到时返回 {@code null}
+     */
+    private static int[] readAvifSize(byte[] data) {
+        for (int i = 0; i + 20 <= data.length; i++) {
+            if (data[i] == 'i' && data[i + 1] == 's' && data[i + 2] == 'p' && data[i + 3] == 'e') {
+                // ispe 是 FullBox：4 字节 version+flags，之后是 width、height
+                int w = readIntBE(data, i + 8);
+                int h = readIntBE(data, i + 12);
+                if (w > 0 && h > 0 && w <= 32768 && h <= 32768) {
+                    return new int[]{w, h};
+                }
+            }
+        }
+        return null;
+    }
+
+    private static int readIntBE(byte[] data, int off) {
+        if (off + 4 > data.length) {
+            return -1;
+        }
+        return ((data[off] & 0xFF) << 24) | ((data[off + 1] & 0xFF) << 16)
+                | ((data[off + 2] & 0xFF) << 8) | (data[off + 3] & 0xFF);
     }
 
     public static int detectFormat(byte[] data) {

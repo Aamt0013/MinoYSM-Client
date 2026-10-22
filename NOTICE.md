@@ -57,19 +57,25 @@ Copyright Yes Steve Model contributors
 
 ## 随包分发的依赖
 
-构建时将以下依赖以嵌套 JAR 形式打入最终制品，各自保留原许可证：
+构建时将以下依赖以嵌套 JAR 或合并进主 JAR 的形式打入最终制品，各自保留原许可证：
 
-| 依赖 | 许可证 | 许可正文 |
-|---|---|---|
-| [Fabric API](https://github.com/FabricMC/fabric) | Apache-2.0 | `licenses/fabric-api-Apache-2.0.txt` |
-| [Architectury API](https://github.com/architectury/architectury-api) | LGPL-3.0 | `licenses/architectury-LGPL-3.0.txt` |
-| [Cardinal Components API](https://github.com/Ladysnake/Cardinal-Components-API) | MIT | `licenses/cardinal-components-MIT.txt` |
-| [Forge Config API Port](https://github.com/Fuzss/forgeconfigapiport) | MPL-2.0 | `licenses/forge-config-api-port-*.txt` |
-| [ImageStream](https://github.com/Nova-Committee/ImageStream) | 上游未标注 | — |
-
-> **ImageStream 的上游仓库未提供许可证文件。** 本项目仅将其作为运行时依赖原样打包，未作修改。若上游后续补充许可证，以该许可证为准。
+| 依赖 | 许可证 | 分发形式 | 许可正文 |
+|---|---|---|---|
+| [Fabric API](https://github.com/FabricMC/fabric) | Apache-2.0 | 嵌套 JAR | `licenses/fabric-api-Apache-2.0.txt` |
+| [Architectury API](https://github.com/architectury/architectury-api) | LGPL-3.0 | 嵌套 JAR | `licenses/architectury-LGPL-3.0.txt` |
+| [Cardinal Components API](https://github.com/Ladysnake/Cardinal-Components-API) | MIT | 嵌套 JAR | `licenses/cardinal-components-MIT.txt` |
+| [Forge Config API Port](https://github.com/Fuzss/forgeconfigapiport) | MPL-2.0 | 嵌套 JAR | `licenses/forge-config-api-port-*.txt` |
+| [TwelveMonkeys ImageIO](https://github.com/haraldk/TwelveMonkeys) | BSD-3-Clause | 合并进主 JAR | `licenses/twelvemonkeys-BSD-3-Clause.txt` |
 
 LGPL-3.0 组件（Architectury）以独立 JAR 形式分发，未与本体代码静态链接，可按 LGPL-3.0 第 4 条替换为修改版本。
+
+### 关于图像格式支持
+
+贴图解码支持 PNG、JPEG、BMP（JDK 自带 ImageIO）与 WebP（TwelveMonkeys）。
+
+**AVIF 不受支持。** 可用的 AVIF 解码器要么依赖原生库（libavif / dav1d），要么没有明确的开源许可，都不适合打包进模组。此前使用的 ImageStream 属于后者 —— 其上游仓库 `TartaricAlkaline/ImageStream` 没有任何许可证文件，无法再分发，已于 1.2.6 移除。
+
+遇到 AVIF 贴图时不会中断模型加载：尺寸从 ISOBMFF 的 `ispe` 盒中读取，像素解码失败则回退为默认贴图，并在日志中提示一次。
 
 ---
 

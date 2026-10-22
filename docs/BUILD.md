@@ -42,15 +42,15 @@ fabric/build/libs/MinoYSM-Client-26.2-<版本号>.jar
 
 ### 代理 / 离线
 
-依赖里包含 JitPack 的 `-SNAPSHOT`（ImageStream），Gradle 每次构建都会联网校验元数据。如果代理没开或者断网，会报 `Could not resolve ... Connection refused`。
-
-这时用离线模式走本地缓存：
+依赖全部来自 Maven Central、Modrinth、Architectury、Ladysnake 等常规仓库，**没有 `-SNAPSHOT`**，首次构建后即可离线：
 
 ```bash
 gradlew.bat build -x test --offline
 ```
 
 前提是之前成功构建过一次，依赖已在 `~/.gradle/caches` 里。
+
+> 1.2.5 及更早版本依赖 JitPack 上的 `ImageStream:-SNAPSHOT`，每次构建都要联网校验元数据。该依赖已于 1.2.6 移除，构建不再需要访问 jitpack.io。
 
 ---
 
@@ -145,9 +145,11 @@ archives_name = MinoYSM-Client-26.2
 
 `mappings-identity.jar` 不存在或被删了。检查仓库根目录。
 
-### `Could not resolve com.github.TartaricAlkaline:ImageStream:-SNAPSHOT`
+### `Could not resolve com.twelvemonkeys.imageio:imageio-webp`
 
-JitPack 连不上。开代理，或者加 `--offline` 走缓存。
+Maven Central 连不上。开代理，或者加 `--offline` 走缓存。
+
+> 1.2.5 及更早版本这里报的是 `com.github.TartaricAlkaline:ImageStream:-SNAPSHOT`（JitPack）。该依赖已在 1.2.6 移除。
 
 ### 构建成功但进游戏崩溃 / 报 namespace 错误
 

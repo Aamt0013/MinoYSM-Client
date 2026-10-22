@@ -42,14 +42,6 @@ subprojects {
             }
         }
         maven {
-            name = "JitPack"
-            url = "https://jitpack.io"
-            content {
-                includeGroup "com.github.OpenYSM"
-                includeGroup "com.github.TartaricAlkaline"
-            }
-        }
-        maven {
             name = "Sponge"
             url = "https://repo.spongepowered.org/repository/maven-public/"
             content {

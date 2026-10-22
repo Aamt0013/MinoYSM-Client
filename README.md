@@ -21,11 +21,11 @@
 
 前往 **[Releases](https://github.com/Aamt0013/MinoYSM-Client/releases/latest)** 下载最新的 `.jar`。
 
-当前版本：**v1.2.5** · 7.96 MB
+当前版本：**v1.2.6** · 7.63 MB
 
 ```
-MinoYSM-Client-26.2-1.2.5.jar
-SHA256: CB5E3C26790C799CD6A47CA1898CEB914B8A3148E051DE4648808A2EC2F8EA74
+MinoYSM-Client-26.2-1.2.6.jar
+SHA256: A975247D12F181E7EA4D86D027464BB8FD085A2EBB07A2BEBCD0E42921FD2E05
 ```
 
 ---
