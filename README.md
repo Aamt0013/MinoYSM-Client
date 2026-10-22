@@ -4,14 +4,14 @@
   <p>Yes Steve Model 的 Minecraft 26.2 纯客户端移植版</p>
   <p><strong>非官方移植，与 Yes Steve Model 官方团队无关</strong></p>
   <p>
-    <img src="https://img.shields.io/badge/Minecraft-26.2-62B47A" alt="Minecraft"/>
-    <img src="https://img.shields.io/badge/Fabric-0.19.3+-blue" alt="Fabric"/>
-    <img src="https://img.shields.io/badge/Java-25-orange" alt="Java"/>
-    <img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="License"/>
+    <img src="assets/badges/minecraft.png" height="20" alt="Minecraft 26.2"/>
+    <img src="assets/badges/fabric.png" height="20" alt="Fabric 0.19.3+"/>
+    <img src="assets/badges/java.png" height="20" alt="Java 25"/>
+    <img src="assets/badges/license.png" height="20" alt="Apache-2.0"/>
   </p>
   <p>
     <a href="https://github.com/Aamt0013/MinoYSM-Client/releases/latest">
-      <img src="https://img.shields.io/github/v/release/Aamt0013/MinoYSM-Client?label=%E4%B8%8B%E8%BD%BD&style=for-the-badge" alt="下载"/>
+      <img src="assets/badges/download.png" height="20" alt="下载"/>
     </a>
   </p>
 </div>
@@ -33,7 +33,7 @@ SHA256: 2B240A53064D823F49C093DCC8F41B1DBF9D43EA4971C0CA898DAD9D995E2039
 
 ## 这是什么
 
-把 [Yes Steve Model](https://github.com/OpenYSM/OpenYSM)（YSM）移植到 **Minecraft 26.2 / Fabric**，并改造成**纯客户端模组**：
+把 [Yes Steve Model](https://modrinth.com/mod/yes-steve-model)（YSM，[源码](https://github.com/YesSteveModel/YesSteveModel)）移植到 **Minecraft 26.2 / Fabric**，并改造成**纯客户端模组**：
 
 - **不需要服务器安装**。进任何服务器（原版服、整合服都行）都能看到自己的模型。
 - 模型从本地 `config/yes_steve_model/custom/` 加载，不依赖服务端下发。
