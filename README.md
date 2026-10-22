@@ -4,13 +4,13 @@
   <p>Yes Steve Model 的 Minecraft 26.2 纯客户端移植版</p>
   <p><strong>非官方移植，与 Yes Steve Model 官方团队无关</strong></p>
   <p>
-    <img src="assets/badges/minecraft.png" height="20" alt="Minecraft 26.2"/>
-    <img src="assets/badges/fabric.png" height="20" alt="Fabric 0.19.3+"/>
-    <img src="assets/badges/java.png" height="20" alt="Java 25"/>
-    <img src="assets/badges/license.png" height="20" alt="Apache-2.0"/>
+    <a href="https://www.minecraft.net/" title="Minecraft 26.2"><img src="assets/badges/minecraft.png" height="20" alt="Minecraft 26.2"/></a>
+    <a href="https://fabricmc.net/use/installer/" title="Fabric Loader 0.19.3+"><img src="assets/badges/fabric.png" height="20" alt="Fabric 0.19.3+"/></a>
+    <a href="https://adoptium.net/temurin/releases/?version=25" title="Java 25"><img src="assets/badges/java.png" height="20" alt="Java 25"/></a>
+    <a href="LICENSE" title="Apache License 2.0"><img src="assets/badges/license.png" height="20" alt="Apache-2.0"/></a>
   </p>
   <p>
-    <a href="https://github.com/Aamt0013/MinoYSM-Client/releases/latest">
+    <a href="https://github.com/Aamt0013/MinoYSM-Client/releases/latest" title="下载最新版本">
       <img src="assets/badges/download.png" height="20" alt="下载"/>
     </a>
   </p>
