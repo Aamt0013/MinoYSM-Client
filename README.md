@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/banner.png" alt="MinoYSM Client"/>
+  <img src="assets/banner.jpg" alt="MinoYSM Client"/>
   <h1>MinoYSM Client</h1>
   <p>Yes Steve Model 的 Minecraft 26.2 纯客户端移植版</p>
   <p>
@@ -21,11 +21,11 @@
 
 前往 **[Releases](https://github.com/Aamt0013/MinoYSM-Client/releases/latest)** 下载最新的 `.jar`。
 
-当前版本：**v1.2.4** · 7.79 MB
+当前版本：**v1.2.5** · 7.93 MB
 
 ```
-MinoYSM-Client-26.2-1.2.4.jar
-SHA256: E43F2C97AEDA96F64476AB19B91F1C7641C4893945E0D28D2D2AF7DF2A00E841
+MinoYSM-Client-26.2-1.2.5.jar
+SHA256: 180DD99EF4C29770AAE5203A259DE33207FD9C40601369191745C44BBFF6A1A5
 ```
 
 ---
