@@ -20,6 +20,11 @@ public class HandItemRenderer {
     private PlayerGeoEntity geoModel = null;
 
     public void renderHandItem(LocalPlayer localPlayer, ModelAssembly modelAssembly, PlayerCapability capability, HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector bufferSource, int packedLight, float partialTick) {
+        // 26.x 的自定义几何体必须提交到 collector 上，为 null 时直接跳过，
+        // 避免 NPE 中断整帧渲染（会连带影响第一人称手部与界面）。
+        if (bufferSource == null) {
+            return;
+        }
         AnimatedGeoModel model;
         if (this.geoModel == null || this.geoModel.getEntity() != localPlayer) {
             this.geoModel = new PlayerGeoEntity(localPlayer, capability);

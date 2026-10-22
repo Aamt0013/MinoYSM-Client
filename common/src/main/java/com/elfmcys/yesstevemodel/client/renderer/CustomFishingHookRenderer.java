@@ -23,13 +23,21 @@ public class CustomFishingHookRenderer {
     public static boolean tryRenderCustomHook(FishingHook fishingHook, EntityRenderState state, float partialTick, PoseStack poseStack, SubmitNodeCollector bufferSource, int packedLight) {
         return ProjectileCapability.get(fishingHook).map(cap -> {
             if (cap.isModelInitialized() && cap.isModelReady()) {
+                // 鱼钩走的是同一条链路：collector 为 null 时既不能画模型，
+                // 下面 renderFishingLine 里的 submitCustomGeometry 还会直接 NPE。
+                // 拿不到就交回原版渲染。
+                SubmitNodeCollector collector = bufferSource != null
+                        ? bufferSource : RenderContext.collector();
+                if (collector == null) {
+                    return true;
+                }
                 fishingHook.setXRot(0.0f);
                 fishingHook.xRotO = 0.0f;
-                RendererManager.getProjectileRenderer().render(cap.getEntity(), state, partialTick, poseStack, bufferSource, packedLight);
+                RendererManager.getProjectileRenderer().render(cap.getEntity(), state, partialTick, poseStack, collector, packedLight);
                 Player playerOwner = fishingHook.getPlayerOwner();
                 if (playerOwner != null) {
                     poseStack.pushPose();
-                    renderFishingLine(fishingHook, partialTick, poseStack, bufferSource, playerOwner);
+                    renderFishingLine(fishingHook, partialTick, poseStack, collector, playerOwner);
                     poseStack.popPose();
                 }
                 return false;

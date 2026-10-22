@@ -12,17 +12,24 @@ import java.util.Set;
 public class MixinTweaker implements IMixinConfigPlugin {
 
     /**
-     * 纯客户端构建下不应用的服务端 Mixin。
+     * 纯客户端构建下**不应跳过**任何 Mixin。
      *
-     * <p>这些 Mixin 的目标都是服务端专用类（{@code ServerPlayer}、
-     * {@code ServerGamePacketListenerImpl}），在纯客户端构建里没有意义，
-     * 而且单人游戏时它们会真的注入到集成服务端的类上，维持一条本该废弃的
-     * 服务端同步链路。跳过可以少一层注入开销，也避免与服务端逻辑产生耦合。
+     * <p>曾经在这里跳过 {@code ServerPlayerMixin} 与
+     * {@code ServerCommonPacketListenerImplMixin}，理由是"纯客户端用不到服务端逻辑"。
+     * 这个判断是错的 —— 单人游戏里集成服务端跑在同一个 JVM，
+     * 这些 Mixin 支撑的功能照常生效，而且有隐藏依赖：
+     *
+     * <p>{@code ServerCommonPacketListenerImplMixin} 给
+     * {@code ServerGamePacketListenerImpl} 添加了
+     * {@code ServerCommonPacketListenerImplAccessor} 接口，
+     * 而 {@code NetworkHandler.isPlayerConnected()} 会强转成这个接口。
+     * 跳过之后强转抛 {@code ClassCastException}，异常从
+     * {@code Projectile.setOwner()} 一路抛出，导致投射物实体根本没生成 ——
+     * 表现为雪球、箭矢、三叉戟、烟花、经验瓶扔出去就消失。
+     *
+     * <p>因此保留该字段但留空，仅作为将来需要时的显式开关。
      */
-    private static final Set<String> SERVER_ONLY_MIXINS = Set.of(
-            "ServerPlayerMixin",
-            "ServerCommonPacketListenerImplMixin"
-    );
+    private static final Set<String> SERVER_ONLY_MIXINS = Set.of();
 
     @Keep
     public void onLoad(String str) {

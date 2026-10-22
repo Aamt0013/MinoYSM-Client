@@ -60,11 +60,13 @@ public abstract class EntityRenderDispatcherMixin implements IEntityRenderDispat
         }
 
         float partialTick = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
-        SubmitNodeCollector bufferSource = RenderContext.collector();
         int packedLight = state.lightCoords;
 
         RenderContext.enter(collector, cameraState);
         try {
+            // 必须在 enter 之后取：enter 之前 ThreadLocal 里是外层上下文
+            // （世界渲染时就是 null），把它传给投射物渲染会一次都画不出来。
+            SubmitNodeCollector bufferSource = RenderContext.collector();
             if (entity instanceof Projectile projectile) {
                 if (!GeneralConfig.DISABLE_PROJECTILE_MODEL.get()) {
                     boolean callOriginal;

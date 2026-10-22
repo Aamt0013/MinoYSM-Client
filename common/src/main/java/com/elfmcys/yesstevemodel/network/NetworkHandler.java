@@ -40,7 +40,17 @@ public final class NetworkHandler {
     }
 
     public static boolean isPlayerConnected(ServerPlayer serverPlayer) {
-        return serverPlayer.connection != null && isConnectionValid(((ServerCommonPacketListenerImplAccessor) serverPlayer.connection).ysm$getConnection());
+        if (serverPlayer == null || serverPlayer.connection == null) {
+            return false;
+        }
+        // 用 instanceof 而不是盲转：这个接口由 ServerCommonPacketListenerImplMixin 注入，
+        // 若 mixin 因任何原因未生效，强转会抛 ClassCastException。
+        // 而本方法的调用点之一是 Projectile.setOwner()，异常会中断投射物实体生成，
+        // 表现为雪球/箭矢/三叉戟/烟花/经验瓶扔出去就消失。
+        if (!(serverPlayer.connection instanceof ServerCommonPacketListenerImplAccessor accessor)) {
+            return false;
+        }
+        return isConnectionValid(accessor.ysm$getConnection());
     }
 
     public static boolean isClientConnected() {

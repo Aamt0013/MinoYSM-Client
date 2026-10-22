@@ -17,7 +17,14 @@ public class CustomVehicleRenderer {
     public static boolean renderVehicle(Entity entity, EntityRenderState state, float yaw, float partialTick, PoseStack poseStack, SubmitNodeCollector bufferSource, int packedLight) {
         return VehicleCapability.get(entity).map(cap -> {
             if (cap.isModelInitialized() && cap.isModelReady()) {
-                RendererManager.getVehicleRenderer().renderEntity(cap, state, getBodyRotation(entity, yaw, partialTick), partialTick, poseStack, bufferSource, packedLight);
+                // 与投射物同理：拿不到 collector 时不要抑制原版渲染，
+                // 否则自定义和原版都不画，载具会"消失"。
+                SubmitNodeCollector collector = bufferSource != null
+                        ? bufferSource : RenderContext.collector();
+                if (collector == null) {
+                    return true;
+                }
+                RendererManager.getVehicleRenderer().renderEntity(cap, state, getBodyRotation(entity, yaw, partialTick), partialTick, poseStack, collector, packedLight);
                 return false;
             }
             return true;

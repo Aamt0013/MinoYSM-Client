@@ -1107,7 +1107,12 @@ public final class ServerModelManager {
         if (!serverGamePacketListenerImpl.isAcceptingMessages() || !serverGamePacketListenerImpl.getClass().equals(ServerGamePacketListenerImpl.class)) {
             return null;
         }
-        return ((ServerCommonPacketListenerImplAccessor) serverGamePacketListenerImpl).ysm$getConnection();
+        // 用 instanceof 而不是盲转：接口由 ServerCommonPacketListenerImplMixin 注入，
+        // 若 mixin 未生效，强转会抛 ClassCastException 并中断调用链。
+        if (!(serverGamePacketListenerImpl instanceof ServerCommonPacketListenerImplAccessor accessor)) {
+            return null;
+        }
+        return accessor.ysm$getConnection();
     }
 
     private static boolean sendModelData(UUID uuid, ByteBuffer byteBuffer, PendingTransfer pendingTransfer) {

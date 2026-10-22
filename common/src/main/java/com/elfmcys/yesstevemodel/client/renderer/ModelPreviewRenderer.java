@@ -428,6 +428,76 @@ public final class ModelPreviewRenderer {
         }
     }
 
+    /**
+     * 个性化设置界面（{@code ModelSettingsScreen}）的模型预览。
+     *
+     * <p><b>为什么不用直接调 {@code renderEntity}</b>：那个界面是在屏幕的
+     * {@code extractRenderState} 里渲染的，没有 PIP 上下文，
+     * {@code RenderContext.collector()} 恒为 {@code null}。而 26.x 的模型绘制
+     * 全靠 {@code SubmitNodeCollector} 提交自定义几何 —— collector 为 null 时
+     * {@code IGeoRenderer} 会直接跳过绘制，结果就是预览区一片空白。
+     *
+     * <p>因此这里改走 PIP：和轮盘、模型选择界面用的是同一套
+     * （{@code guiGraphics.entity} → {@code GuiEntityRenderer} →
+     * {@code GuiEntityRendererMixin} 里建立 RenderContext），
+     * 模型、护甲、手持物、鞘翅都能正常渲染。
+     *
+     * @param x0,y0,x1,y1 预览矩形（GUI 坐标）
+     * @param displaySize 模型显示尺寸，越大越占满
+     * @param pitch       上下视角（度），负值向下看
+     * @param yaw         左右朝向（度）
+     */
+    public static void submitSettingsPreview(
+            GuiGraphicsExtractor guiGraphics,
+            int x0, int y0, int x1, int y1,
+            float displaySize,
+            float pitch,
+            float yaw,
+            float partialTick,
+            LivingAnimatable<?> animatable
+    ) {
+        // PIP 纹理尺寸必须为正，否则 createTexture 抛异常
+        if (x1 <= x0 || y1 <= y0) {
+            return;
+        }
+        if (!(animatable instanceof CustomPlayerEntity customPlayer)) {
+            return;
+        }
+        LivingEntity entity = customPlayer.getEntity();
+        if (!(entity instanceof Player player)) {
+            return;
+        }
+        float entityScale = entity.getScale();
+        if (!(entityScale > 0.0F) || !Float.isFinite(entityScale)) {
+            return;
+        }
+        float submitScale = displaySize / entityScale;
+        if (!(submitScale > 0.0F) || !Float.isFinite(submitScale)) {
+            return;
+        }
+
+        CustomPlayerRenderer renderer = RendererManager.getPlayerRenderer();
+        AvatarRenderState state = new AvatarRenderState();
+        renderer.extractRenderState(player, state, partialTick);
+        state.lightCoords = 15728880;
+        // 朝向交给 renderState，不再去改 entity 的 yBodyRot（那是立即模式时代的做法）
+        state.bodyRot = yaw;
+        state.yRot = 0.0F;
+        state.xRot = 0.0F;
+
+        PreviewEntityRegistry.register(state, customPlayer);
+
+        Quaternionf rotation = new Quaternionf().rotateZ((float) Math.PI);
+        Quaternionf cameraTilt = new Quaternionf().rotateX((float) Math.toRadians(-10.0 + pitch));
+        rotation.mul(cameraTilt);
+
+        Vector3f translation = new Vector3f(0.0F, entity.getBbHeight() / 2.0F, 0.0F);
+
+        guiGraphics.enableScissor(x0, y0, x1, y1);
+        guiGraphics.entity(state, submitScale, translation, rotation, cameraTilt, x0, y0, x1, y1);
+        guiGraphics.disableScissor();
+    }
+
     public static void submitPlayerOverlay(
             GuiGraphicsExtractor guiGraphics,
             LocalPlayer localPlayer,

@@ -190,75 +190,39 @@ public class ModelSettingsScreen extends OptionScreen {
     private void renderPreview(GuiGraphicsExtractor g, float partialTick) {
         if (this.minecraft == null || this.minecraft.player == null) return;
         if (!(animatable instanceof LivingAnimatable<?> la)) return;
-        double scale = this.minecraft.getWindow().getGuiScale();
-        int sx = (int) (previewLeft * scale);
-        int sy = (int) (this.minecraft.getWindow().getHeight() - previewBottom * scale);
-        int sw = (int) ((previewRight - previewLeft) * scale);
-        int sh = (int) ((previewBottom - previewTop) * scale);
-        RenderSystem.enableScissorForRenderTypeDraws(sx, sy, sw, sh);
-        float cx = (previewLeft + previewRight) / 2.0f + offsetX;
-        float cy = previewTop + (previewBottom - previewTop) * 0.65f + offsetY;
-        renderPlayerForSettings(cx, cy, zoom, pitch, yaw, partialTick, la, RendererManager.getPlayerRenderer());
-        RenderSystem.disableScissorForRenderTypeDraws();
+
+        // 走 PIP 提交（guiGraphics.entity），而不是直接调 renderEntity。
+        //
+        // 屏幕渲染路径没有 PIP 上下文，RenderContext.collector() 为 null，
+        // 而 26.x 的模型绘制依赖 SubmitNodeCollector 提交自定义几何 ——
+        // collector 为 null 时 IGeoRenderer 会直接跳过绘制，预览区就是空的。
+        //
+        // 平移量通过偏移预览矩形实现，并夹在面板内，避免画出裁剪区。
+        int x0 = previewLeft;
+        int y0 = previewTop;
+        int x1 = previewRight;
+        int y1 = previewBottom;
+        int dx = (int) offsetX;
+        int dy = (int) offsetY;
+        // 限制平移范围，保证矩形不越出面板
+        int maxDx = Math.max(0, (x1 - x0) / 2);
+        int maxDy = Math.max(0, (y1 - y0) / 2);
+        dx = Mth.clamp(dx, -maxDx, maxDx);
+        dy = Mth.clamp(dy, -maxDy, maxDy);
+        x0 += dx;
+        x1 += dx;
+        y0 += dy;
+        y1 += dy;
+
+        // 26.x：用 DeltaTracker 的帧间插值，Screen#extractRenderState 的 partialTick
+        // 每帧在 ~0 与 ~1 之间跳变，会让模型姿态抽搐
+        float framePartialTick = Minecraft.getInstance().getDeltaTracker()
+                .getGameTimeDeltaPartialTick(false);
+
+        ModelPreviewRenderer.submitSettingsPreview(
+                g, x0, y0, x1, y1, zoom, pitch, yaw, framePartialTick, la);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private static void renderPlayerForSettings(float x, float y, float scale, float pitch, float yaw, float partialTick, LivingAnimatable animatable, GeoReplacedEntityRenderer renderer) {
-        ModelPreviewRenderer.setPreviewMode(true);
-        LivingEntity livingEntity = (LivingEntity) animatable.getEntity();
-        Matrix4fStack modelViewStack = RenderSystem.getModelViewStack();
-        modelViewStack.pushMatrix();
-        modelViewStack.translate(x, y, 1250.0f);
-        modelViewStack.scale(1.0f, 1.0f, -1.0f);
-
-        PoseStack poseStack = new PoseStack();
-        poseStack.translate(0.0d, 0.0d, 1000.0d);
-        poseStack.scale(scale, scale, scale);
-        poseStack.translate(0.0d, 0.8d, 0.0d);
-
-        Quaternionf rotationZ = Axis.ZP.rotationDegrees(180.0f);
-        Quaternionf rotationX = Axis.XP.rotationDegrees(-10.0f + pitch);
-        rotationZ.mul(rotationX);
-        poseStack.mulPose(rotationZ);
-
-        float oldBodyRot = livingEntity.yBodyRot;
-        float oldBodyRotO = livingEntity.yBodyRotO;
-        float oldYRot = livingEntity.getYRot();
-        float oldYRotO = livingEntity.yRotO;
-        float oldXRot = livingEntity.getXRot();
-        float oldXRotO = livingEntity.xRotO;
-        float oldHeadRot = livingEntity.yHeadRot;
-        float oldHeadRotO = livingEntity.yHeadRotO;
-
-        livingEntity.yBodyRot = -yaw;
-        livingEntity.yBodyRotO = -yaw;
-        livingEntity.setYRot(180.0f);
-        livingEntity.yRotO = 180.0f;
-        livingEntity.setXRot(0.0f);
-        livingEntity.xRotO = 0.0f;
-        livingEntity.yHeadRot = -yaw;
-        livingEntity.yHeadRotO = -yaw;
-
-        rotationX.conjugate();
-        poseStack.mulPose(rotationX);
-        SubmitNodeCollector bufferSource = RenderContext.collector();
-        AvatarRenderState state = new AvatarRenderState();
-
-        try {
-            renderer.renderEntity(animatable, state, 0.0f, partialTick, poseStack, bufferSource, 15728880);
-        } finally {
-            livingEntity.yBodyRot = oldBodyRot;
-            livingEntity.yBodyRotO = oldBodyRotO;
-            livingEntity.setYRot(oldYRot);
-            livingEntity.yRotO = oldYRotO;
-            livingEntity.setXRot(oldXRot);
-            livingEntity.xRotO = oldXRotO;
-            livingEntity.yHeadRot = oldHeadRot;
-            livingEntity.yHeadRotO = oldHeadRotO;
-            modelViewStack.popMatrix();
-            ModelPreviewRenderer.setPreviewMode(false);
-        }
-    }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {

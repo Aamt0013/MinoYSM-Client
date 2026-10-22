@@ -34,6 +34,11 @@ public class RenderFirstPlayerBackground {
     }
 
     public static void onRenderHand(PoseStack poseStack, SubmitNodeCollector multiBufferSource, int packedLight, float partialTick) {
+        // 26.x 的自定义几何体必须提交到 collector 上，为 null 时直接跳过，
+        // 避免 NPE 中断整帧渲染（会连带影响第一人称手部与界面）。
+        if (multiBufferSource == null) {
+            return;
+        }
         if (!YesSteveModel.isAvailable()) {
             return;
         }
