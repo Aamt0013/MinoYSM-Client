@@ -9,6 +9,12 @@ import com.elfmcys.yesstevemodel.YesSteveModel;
  * 事后无从定位。这个看门狗在检测到主线程超过阈值未 tick 时，把渲染线程
  * 以及持有锁的线程的堆栈打到日志里，直接指出卡在哪一行。
  *
+ * <p><b>启动宽限期</b>：首次进世界时要解析全部模型，渲染线程会连续占用数秒，
+ * 这属于正常工作量而非卡死。因此在 {@link #arm()} 被调用前（模型扫描完成时），
+ * 阈值放宽到 {@link #GRACE_MS}；之后才按正常阈值判定。若因故一直没收到
+ * {@link #arm()}，运行满 {@link #ARM_TIMEOUT_MS} 后也会自动进入严格模式，
+ * 避免宽限期无限延长。
+ *
  * <p>开销极低：正常运行时每次 tick 只做一次 volatile 写；后台线程每秒醒一次
  * 比较时间戳。触发后每 10 秒最多打印一次，避免刷屏。
  *
@@ -19,8 +25,17 @@ public final class StallWatchdog {
 
     private static final long THRESHOLD_MS = Long.getLong("ysm.stallWatchdogMs", 3000L);
 
+    /** 启动阶段的宽限阈值：模型解析本来就要几秒，不能当成卡死。 */
+    private static final long GRACE_MS = Math.max(THRESHOLD_MS * 10L, 30_000L);
+
+    /** 迟迟收不到 {@link #arm()} 时，最多宽限这么久。 */
+    private static final long ARM_TIMEOUT_MS = 180_000L;
+
     /** 每次 tick 更新的时间戳。 */
     private static volatile long lastTickMs = System.currentTimeMillis();
+
+    /** 第一次 tick 的时间，用于宽限期的兜底解除。 */
+    private static volatile long firstTickMs = 0L;
 
     /** 被监视的线程（首次 tick 时记录）。 */
     private static volatile Thread watchedThread;
@@ -30,16 +45,34 @@ public final class StallWatchdog {
 
     private static volatile boolean started = false;
 
+    /** 是否已进入严格模式（模型扫描完成后）。 */
+    private static volatile boolean armed = false;
+
     private StallWatchdog() {
     }
 
     /** 在客户端 tick 里调用。 */
     public static void tick() {
+        long now = System.currentTimeMillis();
         watchedThread = Thread.currentThread();
-        lastTickMs = System.currentTimeMillis();
+        lastTickMs = now;
+        if (firstTickMs == 0L) {
+            firstTickMs = now;
+        }
+        if (!armed && now - firstTickMs > ARM_TIMEOUT_MS) {
+            armed = true;
+        }
         if (!started && THRESHOLD_MS > 0) {
             start();
         }
+    }
+
+    /**
+     * 进入严格模式。模型扫描完成后调用 —— 此后渲染线程再长时间不推进就是真卡住了。
+     * 可重复调用。
+     */
+    public static void arm() {
+        armed = true;
     }
 
     private static synchronized void start() {
@@ -60,8 +93,9 @@ public final class StallWatchdog {
             } catch (InterruptedException e) {
                 return;
             }
+            long threshold = armed ? THRESHOLD_MS : GRACE_MS;
             long idle = System.currentTimeMillis() - lastTickMs;
-            if (idle < THRESHOLD_MS) {
+            if (idle < threshold) {
                 continue;
             }
             long now = System.currentTimeMillis();
@@ -69,16 +103,17 @@ public final class StallWatchdog {
                 continue;
             }
             lastDumpMs = now;
-            dump(idle);
+            dump(idle, threshold);
         }
     }
 
-    private static void dump(long idleMs) {
+    private static void dump(long idleMs, long thresholdMs) {
         try {
             Thread watched = watchedThread;
             StringBuilder sb = new StringBuilder(4096);
             sb.append("[YSM] 检测到主线程卡顿：已 ")
-                    .append(idleMs).append(" ms 未推进（阈值 ").append(THRESHOLD_MS).append(" ms）\n");
+                    .append(idleMs).append(" ms 未推进（阈值 ").append(thresholdMs).append(" ms")
+                    .append(armed ? "" : "，启动宽限期").append("）\n");
 
             if (watched != null) {
                 sb.append("--- 被监视线程 [").append(watched.getName()).append("] 状态=")

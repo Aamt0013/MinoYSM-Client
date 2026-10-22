@@ -356,6 +356,8 @@ public class ClientModelManager {
                     modelAssemblyMap = merged;
                 }
                 localModelsReady = true;
+                // 启动阶段结束：此后渲染线程再长时间不推进就是真卡顿，不再按宽限阈值放过
+                com.elfmcys.yesstevemodel.client.util.StallWatchdog.arm();
                 YesSteveModel.LOGGER.info("[YSM] Local models ready: " + localModelIds.size()
                         + " registered in " + elapsed + " ms (client-only mode)."
                         + " [cache hit=" + LOCAL_CACHE_HITS.get() + " miss=" + LOCAL_CACHE_MISSES.get()
