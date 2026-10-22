@@ -35,6 +35,13 @@ public class CustomPlayerParrotLayer extends GeoLayerRenderer<CustomPlayerEntity
 
     @Override
     public void render(AvatarRenderState state, PoseStack poseStack, SubmitNodeCollector bufferSource, int packedLightIn, CustomPlayerEntity entityLivingBaseIn, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
+        // 26.x 的 submitModel 必须要有有效的 collector。
+        // 个性化设置界面（ModelSettingsScreen）走的是屏幕渲染路径，直接调 renderEntity，
+        // 那里没有 PIP 上下文，RenderContext.collector() 为 null，传下来就是 null ——
+        // 不拦会 NPE 崩掉整个界面。护甲层和手持物层本来就有同样的守卫。
+        if (bufferSource == null) {
+            return;
+        }
         Player player = entityLivingBaseIn.getEntity();
         AnimatedGeoModel model = entityLivingBaseIn.getCurrentModel();
         if (model == null) {

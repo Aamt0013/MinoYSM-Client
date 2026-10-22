@@ -24,6 +24,8 @@ public final class ClientTickEvent {
     }
 
     private static void onClientPreTick(Minecraft client) {
+        // 放在最前面：这是主线程的心跳，卡死时它会停止更新，看门狗据此报警
+        com.elfmcys.yesstevemodel.client.util.StallWatchdog.tick();
         if (!YesSteveModel.isAvailable()) {
             return;
         }

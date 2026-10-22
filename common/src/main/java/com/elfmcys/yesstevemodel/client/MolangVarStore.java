@@ -112,7 +112,12 @@ public final class MolangVarStore {
         if (modelId == null || modelId.isEmpty()) {
             return Map.of();
         }
-        ensureLoaded();
+        // 快路径：加载完成后不再进同步块。
+        // get() 会被模型加载路径调用，若每次都抢锁，碰上后台正在写文件
+        // 就会让渲染线程短暂阻塞，累积起来表现为卡顿。
+        if (!loaded) {
+            ensureLoaded();
+        }
         Map<String, Float> vars = DATA.get(modelId);
         return vars == null ? Map.of() : vars;
     }
